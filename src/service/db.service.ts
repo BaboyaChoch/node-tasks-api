@@ -1,15 +1,9 @@
 import mysql from 'mysql2';
 import { config } from '../config/enviroment';
 
-const db = mysql.createConnection(config.db);
+const db = mysql.createPool(config.db);
 
-export const query = (sql: string, args: string[] = []): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    db.execute(sql, args, (error, results, fields) => {
-      if (error) {
-        return reject(error);
-      }
-      return resolve(results);
-    });
-  });
+export const query = async (sql: string, args: string[] = []): Promise<any[]> => {
+  const [rows] = await db.promise().query(sql, args);
+  return rows;
 };
